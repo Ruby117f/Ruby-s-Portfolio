@@ -1,0 +1,19 @@
+/* Independent scale preserves existing positioning transforms and entrance effects. */
+:is(button:not(.project-arrow):not(:disabled),.pill,.sidebar .back,.end>a,nav .links a,.sidebar .toc a){
+ transition:scale 180ms cubic-bezier(.22,1,.36,1),background-color 180ms ease,box-shadow 180ms ease,opacity 180ms ease;
+ touch-action:manipulation;
+}
+#contact #contactBtn{transition:scale 180ms cubic-bezier(.22,1,.36,1),background-color 180ms ease,opacity 450ms ease,visibility 450ms!important}
+@media(hover:hover) and (pointer:fine){
+ :is(button:not(.project-arrow):not(:disabled),.pill,.sidebar .back,.end>a,nav .links a,.sidebar .toc a):hover{scale:1.025}
+ #work .project.selected .cover-enter:hover{scale:.8764}
+}
+:is(button:not(.project-arrow):not(:disabled),.pill,.sidebar .back,.end>a,nav .links a,.sidebar .toc a):active{scale:.96;transition-duration:80ms}
+#work .cover-enter{transition:scale 180ms ease,opacity 180ms ease,visibility 180ms ease}
+#work .project-link:active .cover-enter{scale:.8208;opacity:1}
+#work .project-actions .project-arrow:active{background:rgba(255,255,255,.3863)!important}
+@media(prefers-reduced-motion:reduce){
+ :is(button:not(.project-arrow),.pill,.sidebar .back,.end>a,nav .links a,.sidebar .toc a){scale:1!important;transition:none!important}
+ #contact #contactBtn{transition:none!important}
+ #work .cover-enter{scale:.855!important;transition:none!important}
+}

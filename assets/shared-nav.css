@@ -1,0 +1,22 @@
+/* Shared navigation: home and project pages use the same rules. */
+@font-face{font-family:'Montserrat Alternates';src:url('fonts/MontserratAlternates-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+body>nav{box-sizing:border-box;position:fixed;left:0;top:0;z-index:20;width:100%;height:64px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;gap:24px;background:rgba(0,0,0,.18);border-bottom:1px solid #ffffff26;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);box-shadow:inset 0 1px 0 #ffffff18,0 8px 32px #00000016;transition:none;font-family:MiSans,sans-serif}
+body>nav.scrolled{background:rgba(20,20,20,.56);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom-color:#ffffff20}
+body>nav .logo{position:relative;display:inline-flex;align-items:flex-start;font-family:'Montserrat Alternates',MiSans,sans-serif;font-size:25px;font-weight:500;letter-spacing:-1px;line-height:normal;-webkit-text-stroke:0;color:#f1f1ef;text-decoration:none}
+body>nav .logo sup{font-family:MiSans,sans-serif;font-size:10px;font-weight:500;line-height:1;margin:1px 0 0 2px;-webkit-text-stroke:0}
+body>nav .links{display:flex;gap:0;margin-left:auto;font-size:11px}
+body>nav .links a{min-height:36px;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;font-size:11px;font-weight:400;color:#f1f1ef;opacity:1;text-decoration:none}
+body>nav .links a:hover{background:#ffffff0d;color:#fff;opacity:1}
+body>nav .links a:last-child{gap:3px}
+body>nav .links a:last-child .chevron{width:6px;height:6px;border-width:1.3px;margin:0;flex-shrink:0}
+@media(max-width:700px){body>nav{height:56px}body>nav .links{gap:16px}body>nav .links a{font-size:12px}}
+
+/* Keep navigation labels on one line, including the narrowest layout. */
+body>nav,body>nav .links{flex-wrap:nowrap}
+body>nav .logo,body>nav .links a{flex-shrink:0;white-space:nowrap}
+button,.pill{white-space:nowrap}
+@media(max-width:600px){
+ body>nav{padding-left:24px;padding-right:24px;gap:16px}
+ body>nav .links{gap:0}
+ body>nav .links a:not(:last-child){display:none}
+}
