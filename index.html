@@ -362,11 +362,10 @@ html,body{overflow-x:clip;}
 #work .project .project-link:hover .cover-enter,
 #work .project .project-link:focus-visible .cover-enter{opacity:1;visibility:visible}
 </style><style id="project-entry-selection-motion">
-/* One soft breath on selection, preserving the button's layout position. */
-#work .project .cover-enter{scale:.855!important;transform:scale(1);transform-origin:center;animation:none;transition:opacity 180ms ease}
+/* Preserve the approved 540px-cover proportions at every card width. */
+#work .project .cover-enter{width:42px;height:42px;right:calc(7.037037% - 21px);bottom:10%;translate:0 calc(50% - var(--entry-up,3px));scale:var(--entry-scale,.855)!important;transform:scale(1);transform-origin:center;animation:none;transition:opacity 180ms ease}
 #work .project .cover-enter .chevron{translate:0 0;animation:none}
-#work .project.selected .cover-enter{animation:entry-button-breathe 600ms ease-in-out 1}
-@keyframes entry-button-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+#work .project.selected .cover-enter{animation:none}
 @media(prefers-reduced-motion:reduce){
  #work .project .cover-enter{animation:none!important;transform:scale(1)}
 }
@@ -526,28 +525,49 @@ document.fonts.ready.then(()=>requestAnimationFrame(alignAboutContact));
 })();
 </script><script src="assets/project-transition.js?v=fe8b3c731a6c"></script><script src="assets/contact-copy.js?v=1"></script><script src="assets/overview-light.js?v=20261116"></script><script id="project-entry-hover-replay">
 (() => {
+ const track=document.querySelector('#work .projects');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
- const running=new WeakMap();
- function breathe(card){
-  if(reduced.matches)return;
-  const button=card.querySelector('.cover-enter');if(!button)return;
-  running.get(button)?.cancel();
-  const animation=button.animate([
-   {transform:'scale(1)',offset:0,easing:'ease-in-out'},
-   {transform:'scale(1.06)',offset:.5,easing:'ease-in-out'},
-   {transform:'scale(1)',offset:1}
-  ],{duration:600,iterations:1,easing:'linear'});
-  running.set(button,animation);
-  animation.onfinish=()=>{if(running.get(button)===animation)running.delete(button)};
+ let timer=0,animation=null,visible=false,touching=false;
+ // ResizeObserver measures the layout box, unaffected by card/entry animations.
+ const sizing=new ResizeObserver(entries=>entries.forEach(({target,contentRect})=>{
+  const ratio=contentRect.width/540;
+  target.style.setProperty('--entry-scale',String(.855*ratio));
+  target.style.setProperty('--entry-up',`${3*ratio}px`);
+ }));
+ track.querySelectorAll('.project-cover').forEach(cover=>sizing.observe(cover));
+ function cancel(){clearTimeout(timer);animation?.cancel();animation=null}
+ function schedule(){
+  cancel();
+  if(reduced.matches||!visible||touching)return;
+  const card=track.querySelector('.project.selected');
+  if(!card)return;
+  // Breathe once after the selected card has stopped scrolling for 400ms.
+  timer=setTimeout(()=>{
+   if(!visible||touching||!card.classList.contains('selected'))return;
+   const button=card.querySelector('.cover-enter');
+   animation=button.animate([
+    {transform:'scale(1)',offset:0,easing:'ease-in-out'},
+    {transform:'scale(1.07)',offset:.5,easing:'ease-in-out'},
+    {transform:'scale(1)',offset:1}
+   ],{duration:600,iterations:1,easing:'linear'});
+  },400);
  }
- document.addEventListener('pointerover',event=>{
+ new MutationObserver(schedule).observe(track,{subtree:true,attributes:true,attributeFilter:['class']});
+ track.addEventListener('scroll',schedule,{passive:true});
+ track.addEventListener('touchstart',()=>{touching=true;cancel()},{passive:true});
+ track.addEventListener('touchend',()=>{touching=false;schedule()},{passive:true});
+ track.addEventListener('touchcancel',()=>{touching=false;schedule()},{passive:true});
+ track.addEventListener('pointerover',event=>{
   if(event.pointerType!=='mouse')return;
-  const card=event.target.closest('#work .project-link');
+  const card=event.target.closest('.project.selected .project-link');
   if(!card||(event.relatedTarget instanceof Node&&card.contains(event.relatedTarget)))return;
-  breathe(card);
+  schedule();
  });
- document.addEventListener('focusin',event=>{
-  const card=event.target.closest('#work .project-link');if(card)breathe(card);
- });
+ track.addEventListener('focusin',schedule);
+ new IntersectionObserver(entries=>{
+  visible=entries[0].isIntersecting;
+  if(visible)schedule();else cancel();
+ },{threshold:.35}).observe(track);
+ reduced.addEventListener('change',()=>{if(reduced.matches)cancel()});
 })();
 </script></body></html>
